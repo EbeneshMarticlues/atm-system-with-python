@@ -1,0 +1,58 @@
+class Account:
+    def __init__(self, account_no, pin, balance):
+        self.account_no = account_no
+        self.pin = pin
+        self.balance = balance
+
+class ATM:
+    def __init__(self, accounts):
+        self.accounts = accounts
+
+    def check_balance(self, account_no, pin):
+        account = self._get_account(account_no, pin)
+        return account.balance
+
+    def withdraw(self, account_no, pin, amount):
+        account = self._get_account(account_no, pin)
+        if account.balance < amount:
+            raise ValueError('Insufficient funds')
+        account.balance -= amount
+        return account.balance
+
+    def deposit(self, account_no, pin, amount):
+        account = self._get_account(account_no, pin)
+        account.balance += amount
+        return account.balance
+
+    def _get_account(self, account_no, pin):
+        for account in self.accounts:
+            if account.account_no == account_no and account.pin == pin:
+                return account
+        raise ValueError('Invalid account or PIN')
+
+if __name__ == '__main__':
+    accounts = [Account('1234567890', '1234', 1000),
+                Account('0987654321', '4321', 500)]
+    atm = ATM(accounts)
+
+    # test check_balance method
+    balance = atm.check_balance('1234567890', '1234')
+    print('Account balance:', balance)
+
+    # test withdraw method
+    try:
+        balance = atm.withdraw('1234567890', '1234', 500)
+        print('New balance:', balance)
+    except ValueError as e:
+        print('Error:', e)
+
+    # test deposit method
+    balance = atm.deposit('1234567890', '1234', 200)
+    print('New balance:', balance)
+
+    # test invalid account or PIN
+    try:
+        balance = atm.check_balance('9999999999', '0000')
+        print('Account balance:', balance)
+    except ValueError as e:
+        print('Error:', e)
